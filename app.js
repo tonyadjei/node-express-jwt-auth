@@ -6,6 +6,8 @@ const app = express();
 
 // middleware
 app.use(express.static('public'));
+// using the express json parser middleware. it converts any json data we get from a request into a javascript object and attaches it to the req object
+app.use(express.json());
 
 // view engine
 app.set('view engine', 'ejs');
