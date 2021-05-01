@@ -13,8 +13,16 @@
 
 <script>
     const form = document.querySelector('form');
+    const emailError = document.querySelector('.email.error');
+    const passwordError = document.querySelector('.password.error');
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // reset errors
+        emailError.textContent = '';
+        passwordError.textContent = '';
+        
 
         // get the values from the form
         const email = form.email.value;
@@ -28,6 +36,17 @@
                 body: JSON.stringify({ email, password }),
                 headers: { 'Content-Type': 'application/json' }
             });
+
+            const data = await res.json(); // we are parsing the json we received from the server into an object, this procedure is asynchronous and returns a promise.
+            console.log(data);
+            if(data.errors) {
+                emailError.textContent = data.errors.email;
+                passwordError.textContent = data.errors.password;
+            }
+            if(data.user) {
+                // redirect user to homepage
+                location.assign('/');
+            }
         }
         catch(err) {
             console.log(err);
