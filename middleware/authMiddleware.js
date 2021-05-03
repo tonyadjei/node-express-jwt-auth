@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 const requireAuth = (req, res, next) => { // custom middleware is a function that will be called with the req, res and next as arguments.
     const token = req.cookies.jwt;
@@ -20,5 +21,29 @@ const requireAuth = (req, res, next) => { // custom middleware is a function tha
     }
 }
 
+// check current user middleware: This middleware is used to decode the payload information in the token(to get the user id) and use it to query the database to find that particular user, and then create a variable on the res.locals object, so that we can access that in our views and display that user's information in our views.
 
-module.exports = { requireAuth };
+const checkUser = (req, res, next) => {
+    const token = req.cookies.jwt;
+    if(token){
+        jwt.verify(token, 'fearless pilgrim', async (err, decodedToken) => {
+            if(err) {
+                console.log(err);
+                res.locals.user = null;
+                next();
+            } else {
+                console.log(decodedToken)
+                let user = await User.findById(decodedToken.id);
+                res.locals.user = user; // we are creating a variable on res.locals(which is used to store local data that we can access in our views to inject dynamic data)
+                next();
+            }
+        })
+    } else {
+        res.locals.user = null;
+        next();
+    }
+  
+}
+
+
+module.exports = { requireAuth, checkUser };
