@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const cookieParser = require('cookie-parser'); //3rd party middleware package to help us create cookies and also get cookies from the requests(when a browser has a cookie in its storage, anytime it makes a request, it sends the cookie data along with that request so that the server side can access it)
+const { requireAuth } = require('./middleware/authMiddleware');
 
 const app = express();
 
@@ -22,8 +23,9 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true, useCre
 
 // routes
 
-app.get('/', (req,res) => res.render('home'));
-app.get('/smoothies', (req, res) => res.render('smoothies'));
+app.get('/', requireAuth, (req,res) => res.render('home'));
+
+app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies')); // we can pass our custom middleware as a 2nd argument to our route handlers. It will be called and the req, res and next will be passed as arguments to it. We can use it to do some checks before allowing access to a protected route or state changing data/page.
 app.use(authRoutes);
 
 // routes for testing cookies

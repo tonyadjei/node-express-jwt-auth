@@ -76,3 +76,5 @@ module.exports.login_post = async (req, res) => {
     }
 
 }
+
+// note: jwt functions are not async, bcrypt functions are async
