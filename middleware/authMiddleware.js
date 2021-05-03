@@ -20,4 +20,5 @@ const requireAuth = (req, res, next) => { // custom middleware is a function tha
     }
 }
 
+
 module.exports = { requireAuth };

@@ -34,7 +34,7 @@ const handleErrors = (err) => {
 
 const maxAge = 3 * 24 * 60 * 60; // for jwt, the expiry date is in seconds, for cookies, it's in milliseconds
 const createToken = (id) => {
-    return jwt.sign({ id }, 'fearless pilgrim', { // we put the payload(which is an object) and then a secret(which we will hash together with the header and the payload to create the signature), and then an options object(which we can use to specify the period for which the jwt will be valid by using the expiresIn property ). The header is applied automatically.
+    return jwt.sign({ id }, 'fearless pilgrim', { // we put the payload(which is an object) and a secret (which we will hash together with the header and the payload to create the signature), and then an options object(which we can use to specify the period for which the jwt will be valid by using the expiresIn property ). The header is applied automatically.
         expiresIn: maxAge
     });
 }
@@ -65,7 +65,7 @@ module.exports.signup_post = async (req, res) => {
 module.exports.login_post = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await User.login(email, password);
+        const user = await User.login(email, password); // User.login is a static method we created in the user model file on the userSchema.
         const token = createToken(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
         res.status(200).json({ user: user._id });
@@ -75,6 +75,11 @@ module.exports.login_post = async (req, res) => {
         res.status(400).json({ errors });
     }
 
+}
+module.exports.logout_get = (req, res) => {
+    // we can't really delete a cookie, but we can set its value to an empty string and give it a very short expiry date(maxAge property in the options object)
+    res.cookie('jwt', '', { maxAge: 1 }); // we are creating a cookie with the same name as the jwt token to replace/override the existing one. We set a maxAge of 1 millisecond. When a cookie expires, it is deleted from the browser's local storage
+    res.redirect('/')
 }
 
 // note: jwt functions are not async, bcrypt functions are async

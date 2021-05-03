@@ -23,7 +23,7 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true, useCre
 
 // routes
 
-app.get('/', requireAuth, (req,res) => res.render('home'));
+app.get('/', (req,res) => res.render('home'));
 
 app.get('/smoothies', requireAuth, (req, res) => res.render('smoothies')); // we can pass our custom middleware as a 2nd argument to our route handlers. It will be called and the req, res and next will be passed as arguments to it. We can use it to do some checks before allowing access to a protected route or state changing data/page.
 app.use(authRoutes);
