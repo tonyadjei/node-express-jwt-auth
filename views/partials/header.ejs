@@ -11,9 +11,13 @@
     <nav>
         <h1><a href="/">Tony's Smoothies</a></h1>
         <ul>
-            <li><a href="/logout">Log out</a></li>
-            <li><a href="/login">Log in</a></li>
-            <li><a href="/signup" class="btn">Sign up</a></li>
+            <% if(user) { %> <!-- we are accessing this value from res.locals.user(which we set on ther server side, inside our custom middleware called checkUser, which runs for all GET requests)-->
+                <li>Welcome, <%= user.email %></li>
+                <li><a href="/logout">Log out</a></li>
+            <% } else { %>
+                <li><a href="/login">Log in</a></li>
+                <li><a href="/signup" class="btn">Sign up</a></li>
+            <%  } %>
         </ul>
     </nav>
 
