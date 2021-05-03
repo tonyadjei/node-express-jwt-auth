@@ -21,18 +21,31 @@ const userSchema = new Schema({
 // MONGOOSE HOOKS
 // fire a function after a new user document has been saved to the db
 
-userSchema.post('save', function (doc, next) {
+userSchema.post('save', function (doc, next) { // inside the callback functions, we get access to the document that has been saved to the database and also a next() method for continuing the operation, otherwise the process will keep hanging.
     console.log('new user was created & saved', doc );
     next()
 });
 
 // fire a function before a doc is saved to the db
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function (next) { // for the callback functions in the 'pre' mongoose hooks, you only get access to the next function
     const salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(this.password, salt); 
+    this.password = await bcrypt.hash(this.password, salt); // the 'this' keyword here, references the local instance of the object created by the User model, before it is saved to the database.
     next();
 })
+
+// static method to log in user
+userSchema.statics.login = async function(email, password) {
+    const user = await this.findOne({ email }); // here, the 'this' keyword is a reference to the User model.
+    if(user) {
+        const auth = await bcrypt.compare(password, user.password);
+        if(auth) {
+            return user
+        }
+        throw Error('incorrect password');
+    }
+    throw Error('incorrect email');
+}
 
 const User = mongoose.model('user', userSchema);
 
